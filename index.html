@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Caroline Stacia's M.S. Business Analytics thesis (Mercy University, 2024): a 50-state analysis of corporate tax structures, business rankings and growth.">
+<title>State Corporate Tax Structures | Caroline Stacia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a research one-pager. Narrow reading column, data blocks set like a tax table, one chart, then the paper itself. */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --ink:#141c2b; --muted:#5a6475; --rule:#dde1e8;
+  --accent:#0f6b5c; --accent-soft:#e3f1ee;
+  --s-nc:#0f6b5c; --s-va:#b4541a; --s-ny:#3d4fa8; --band:#eef0f4;
+  --display:"Archivo",system-ui,sans-serif;
+  --body:"Source Serif 4",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f141c; --surface:#161d28; --ink:#e7ebf2; --muted:#9aa4b5; --rule:#2a3342;
+  --accent:#4cc2ab; --accent-soft:#16302c; --s-nc:#4cc2ab; --s-va:#f0965a; --s-ny:#8d9cf2; --band:#1b2330; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141c; --surface:#161d28; --ink:#e7ebf2; --muted:#9aa4b5; --rule:#2a3342;
+  --accent:#4cc2ab; --accent-soft:#16302c; --s-nc:#4cc2ab; --s-va:#f0965a; --s-ny:#8d9cf2; --band:#1b2330; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 17px/1.65 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:760px;margin:0 auto;padding-block:56px 72px;display:grid;gap:64px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,5.2vw,44px);font-weight:800;letter-spacing:-.02em}
+h2{font-size:24px;font-weight:700;letter-spacing:-.01em}
+h3{font-size:17px;font-weight:700}
+p{margin:0}
+.label{font:500 12px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+section{display:grid;gap:20px}
+.lede{font-size:19px;color:var(--ink);max-width:62ch}
+.muted{color:var(--muted)}
+
+header{display:grid;gap:22px}
+.byline{display:flex;flex-wrap:wrap;gap:8px 22px;font:500 14px/1.5 var(--mono);color:var(--muted)}
+.byline strong{color:var(--ink);font-weight:500}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.btn{font:600 15px/1 var(--display);padding:13px 18px;border-radius:6px;text-decoration:none;border:1px solid var(--accent);cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--accent)}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));border-top:2px solid var(--ink);border-bottom:1px solid var(--rule)}
+.stat{padding:16px 16px 18px 0;display:grid;gap:4px;align-content:start}
+.stat+.stat{padding-left:16px;border-left:1px solid var(--rule)}
+.stat b{font:700 30px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:14px;color:var(--muted);line-height:1.4}
+@media (max-width:540px){.stat+.stat{border-left:0;padding-left:0;border-top:1px solid var(--rule)}}
+
+ol.questions{margin:0;padding-left:1.4em;display:grid;gap:8px}
+ol.questions li::marker{font:500 14px var(--mono);color:var(--accent)}
+
+.findings{display:grid;gap:0;border-top:1px solid var(--rule)}
+.finding{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid var(--rule)}
+.finding .k{font:500 13px/1.5 var(--mono);color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+.finding div{min-width:0;display:grid;gap:6px}
+@media (max-width:600px){.finding{grid-template-columns:1fr;gap:6px}}
+
+.tables{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media (max-width:600px){.tables{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font:400 14px/1.4 var(--mono);font-variant-numeric:tabular-nums}
+caption{text-align:left;font:700 15px var(--display);padding-bottom:8px}
+th{font-weight:500;color:var(--muted);text-align:left;border-bottom:1px solid var(--ink);padding:6px 0;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+td{border-bottom:1px solid var(--rule);padding:7px 0}
+td:first-child,th:first-child{width:2.5em;color:var(--muted)}
+td:last-child,th:last-child{text-align:right}
+
+.chart{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:18px 14px 10px;overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:520px;height:auto}
+.chart text{font-family:var(--mono);font-size:12px;fill:var(--muted)}
+.chart .end{font-weight:500;font-size:12.5px}
+.note{font-size:14px;color:var(--muted)}
+
+.methods{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:500 13px/1 var(--mono);padding:8px 10px;border:1px solid var(--rule);border-radius:4px;background:var(--surface)}
+
+.reader{background:var(--surface);border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.reader-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--rule);background:var(--band)}
+.reader-bar .ctrl{display:flex;gap:8px;align-items:center;font:500 13px var(--mono)}
+.reader-bar button{font:600 13px var(--display);padding:8px 12px;border-radius:5px;border:1px solid var(--rule);background:var(--surface);color:var(--ink);cursor:pointer}
+.reader-bar button:disabled{opacity:.4;cursor:default}
+.page-box{padding:16px;display:grid;place-items:center;min-height:260px;background:var(--band)}
+.page-box canvas{max-width:100%;height:auto;box-shadow:0 1px 3px rgba(0,0,0,.18);background:#fff}
+#jump{width:4.2em;font:500 13px var(--mono);padding:6px;border:1px solid var(--rule);border-radius:4px;background:var(--surface);color:var(--ink)}
+
+footer{border-top:1px solid var(--rule);padding-top:20px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font:400 13px/1.5 var(--mono);color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="label">Master's thesis · M.S. Business Analytics · 2024</p>
+    <h1>How State Corporate Tax Structures Shape Business Strategy and Growth</h1>
+    <p class="lede">A 50-state analysis of corporate income tax rates from 2018 to 2023, compared against CNBC's Top States for Business rankings, with regression and forecasting in R and Excel.</p>
+    <div class="byline"><span><strong>Caroline Stacia</strong></span><span>Mercy University</span><span>93 pages</span></div>
+    <div class="actions">
+      <a class="btn primary" href="#read">Read the thesis</a>
+      <a class="btn ghost" href="Caroline-Stacia_State-Corporate-Tax-Analysis_MS-Thesis-2024.pdf" target="_blank" rel="noopener">Download PDF</a>
+      <a class="btn ghost" href="https://www.linkedin.com/in/caroline-stacia" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </header>
+
+  <section aria-label="Key numbers">
+    <div class="stats">
+      <div class="stat"><b>50 + DC</b><span>jurisdictions ranked by average corporate tax rate</span></div>
+      <div class="stat"><b>2018–23</b><span>six years of Tax Foundation rate and bracket data</span></div>
+      <div class="stat"><b>R² 0.966</b><span>regression fit of CNBC's 10 categories to 2021 state rank</span></div>
+      <div class="stat"><b>2024–25</b><span>forecast for Virginia, North Carolina and New York</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Abstract</h2>
+    <p>State tax structures shape where companies expand, how they invest and what it costs them to operate. This thesis tracks how corporate tax structures in each state changed from 2018 to 2023, ranks states by their average corporate tax rate, and compares that ranking with CNBC's assessment of the best states to start a business. The goal is practical guidance for businesses, policymakers and investors deciding where to operate.</p>
+    <h3>Research questions</h3>
+    <ol class="questions">
+      <li>How have state corporate tax structures changed from 2018 to 2023?</li>
+      <li>How have those changes affected business decisions, especially geographic expansion?</li>
+      <li>What strategies can organizations use to optimize operations across different tax regimes?</li>
+      <li>What correlation exists between tax structure and in-state economic growth?</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Key findings</h2>
+    <div class="findings">
+      <div class="finding"><span class="k">No corporate tax</span><div><p>Nevada, Ohio, Texas and Washington held a 0% corporate income tax rate in every year studied. Ohio and Washington tax gross receipts instead of income. South Dakota and Wyoming levy no corporate tax at all.</p></div></div>
+      <div class="finding"><span class="k">Highest rates</span><div><p>Minnesota (9.8%), Illinois (9.5%) and Pennsylvania (9.99% through 2022) stayed at the costly end. Pennsylvania's cut to 8.99% in 2023 left Minnesota with the highest rate.</p></div></div>
+      <div class="finding"><span class="k">Taxes aren't everything</span><div><p>CNBC's top state for business was Virginia in 2021 and North Carolina in 2022–23. Neither was among the lowest-tax states except North Carolina (2.5%). A regression on CNBC's ten categories explained 95.7% of the variation in state rank (adjusted R², n = 50).</p></div></div>
+      <div class="finding"><span class="k">New York City</span><div><p>Despite its reputation, New York ranked 27th of 51 on average corporate tax (6.5%) until 2021, slipping to 32nd at 6.88% in 2022. Its CNBC rank moved from 22nd (2021) to 36th (2022) and back to 20th (2023), and the forecast shows it holding steady.</p></div></div>
+    </div>
+
+    <div class="tables">
+      <table>
+        <caption>Lowest average rate, 2023</caption>
+        <thead><tr><th>#</th><th>State</th><th>Rate</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Nevada</td><td>0.00%</td></tr>
+          <tr><td>2</td><td>Ohio</td><td>0.00%</td></tr>
+          <tr><td>3</td><td>Texas</td><td>0.00%</td></tr>
+          <tr><td>4</td><td>Washington</td><td>0.00%</td></tr>
+          <tr><td>5</td><td>North Carolina</td><td>2.50%</td></tr>
+        </tbody>
+      </table>
+      <table>
+        <caption>Highest average rate, 2023</caption>
+        <thead><tr><th>#</th><th>State</th><th>Rate</th></tr></thead>
+        <tbody>
+          <tr><td>45</td><td>Delaware</td><td>8.70%</td></tr>
+          <tr><td>46</td><td>California</td><td>8.84%</td></tr>
+          <tr><td>47</td><td>Pennsylvania</td><td>8.99%</td></tr>
+          <tr><td>48</td><td>Illinois</td><td>9.50%</td></tr>
+          <tr><td>49</td><td>Minnesota</td><td>9.80%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Forecast: CNBC total points, 2021–2025</h2>
+    <p class="muted">Total points across CNBC's ten categories (cost of doing business, workforce, economy, infrastructure and more). 2024–25 values are Excel <code>FORECAST</code> projections from 2021–23.</p>
+    <div class="chart">
+      <svg viewBox="0 0 660 320" role="img" aria-label="Line chart. North Carolina rises from 1546 points in 2021 to a forecast 1708 in 2025. Virginia falls from 1587 to a forecast 1466. New York goes from 1346 to 1232, back to 1351, and is forecast near 1317.">
+        <rect x="362" y="14" width="228" height="266" fill="var(--band)"/>
+        <text x="476" y="30" text-anchor="middle">forecast</text>
+        <g stroke="var(--rule)" stroke-width="1">
+          <line x1="50" x2="590" y1="280" y2="280"/><line x1="50" x2="590" y1="232.7" y2="232.7"/><line x1="50" x2="590" y1="185.5" y2="185.5"/>
+          <line x1="50" x2="590" y1="138.2" y2="138.2"/><line x1="50" x2="590" y1="90.9" y2="90.9"/><line x1="50" x2="590" y1="43.6" y2="43.6"/>
+        </g>
+        <g text-anchor="end">
+          <text x="42" y="284">1,200</text><text x="42" y="236.7">1,300</text><text x="42" y="189.5">1,400</text>
+          <text x="42" y="142.2">1,500</text><text x="42" y="94.9">1,600</text><text x="42" y="47.6">1,700</text>
+        </g>
+        <g text-anchor="middle">
+          <text x="50" y="304">2021</text><text x="175" y="304">2022</text><text x="300" y="304">2023</text><text x="425" y="304">2024</text><text x="550" y="304">2025</text>
+        </g>
+        <g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline stroke="var(--s-nc)" points="50,116.4 175,100.4 300,77.7"/>
+          <polyline stroke="var(--s-nc)" stroke-dasharray="6 5" points="300,77.7 425,59.2 550,39.9"/>
+          <polyline stroke="var(--s-va)" points="50,97.1 175,113.1 300,125.4"/>
+          <polyline stroke="var(--s-va)" stroke-dasharray="6 5" points="300,125.4 425,140.1 550,154.3"/>
+          <polyline stroke="var(--s-ny)" points="50,211 175,264.9 300,208.6"/>
+          <polyline stroke="var(--s-ny)" stroke-dasharray="6 5" points="300,208.6 425,225.6 550,224.7"/>
+        </g>
+        <g stroke="var(--surface)" stroke-width="1.5">
+          <circle cx="550" cy="39.9" r="4.5" fill="var(--s-nc)"/>
+          <circle cx="550" cy="154.3" r="4.5" fill="var(--s-va)"/>
+          <circle cx="550" cy="224.7" r="4.5" fill="var(--s-ny)"/>
+        </g>
+        <text class="end" x="560" y="44" style="fill:var(--s-nc)">NC 1,708</text>
+        <text class="end" x="560" y="158" style="fill:var(--s-va)">VA 1,466</text>
+        <text class="end" x="560" y="229" style="fill:var(--s-ny)">NY 1,317</text>
+      </svg>
+    </div>
+    <p class="note">The thesis notes the forecast's limits: some category projections fall below CNBC's minimum of 0 points, and the model can't anticipate shocks like the 2020 pandemic.</p>
+  </section>
+
+  <section>
+    <h2>Methods and tools</h2>
+    <div class="methods">
+      <span class="chip">R / RStudio</span><span class="chip">Microsoft Excel</span><span class="chip">Multiple linear regression</span>
+      <span class="chip">ANOVA</span><span class="chip">Time-series forecasting</span><span class="chip">Tax Foundation data</span><span class="chip">CNBC Top States for Business</span>
+    </div>
+  </section>
+
+  <section id="read">
+    <h2>Read the thesis</h2>
+    <div class="reader">
+      <div class="reader-bar">
+        <div class="ctrl">
+          <button id="prev" type="button" disabled>Previous</button>
+          <button id="next" type="button" disabled>Next</button>
+        </div>
+        <div class="ctrl"><label for="jump">Page</label><input id="jump" type="number" min="1" value="1"><span id="count">of 93</span></div>
+      </div>
+      <div class="page-box"><canvas id="page" aria-label="Thesis page"></canvas><p id="status" class="note">Loading the thesis…</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2024 Caroline Stacia · Mercy University</span>
+    <span>Data: Tax Foundation, CNBC</span>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(function(){
+  var FILE = "Caroline-Stacia_State-Corporate-Tax-Analysis_MS-Thesis-2024.pdf";
+  var canvas = document.getElementById("page"), status = document.getElementById("status");
+  var prev = document.getElementById("prev"), next = document.getElementById("next");
+  var jump = document.getElementById("jump"), count = document.getElementById("count");
+  var doc = null, num = 1, busy = false, queued = null;
+  canvas.hidden = true;
+  if (!window.pdfjsLib) { status.textContent = "The reader couldn't load. Please refresh the page."; return; }
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  function render(n){
+    if (busy){ queued = n; return; }
+    busy = true;
+    doc.getPage(n).then(function(page){
+      var w = Math.min(canvas.parentElement.clientWidth - 32, 900);
+      var base = page.getViewport({scale:1});
+      var dpr = window.devicePixelRatio || 1;
+      var vp = page.getViewport({scale: (w / base.width) * dpr});
+      canvas.width = vp.width; canvas.height = vp.height; canvas.style.width = (vp.width/dpr) + "px";
+      return page.render({canvasContext: canvas.getContext("2d"), viewport: vp}).promise;
+    }).then(function(){
+      busy = false; canvas.hidden = false; status.hidden = true;
+      num = n; jump.value = n; prev.disabled = n <= 1; next.disabled = n >= doc.numPages;
+      if (queued !== null){ var q = queued; queued = null; render(q); }
+    }).catch(function(){ busy = false; status.textContent = "This page couldn't be displayed."; });
+  }
+  pdfjsLib.getDocument(FILE).promise.then(function(d){
+    doc = d; count.textContent = "of " + d.numPages; jump.max = d.numPages; render(1);
+  }).catch(function(){ status.textContent = "The thesis couldn't be loaded. Please refresh the page."; });
+  prev.addEventListener("click", function(){ if (doc && num > 1) render(num - 1); });
+  next.addEventListener("click", function(){ if (doc && num < doc.numPages) render(num + 1); });
+  jump.addEventListener("change", function(){
+    if (!doc) return; var n = Math.max(1, Math.min(doc.numPages, parseInt(jump.value, 10) || 1)); render(n);
+  });
+})();
+</script>
+</body>
+</html>
